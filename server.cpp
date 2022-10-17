@@ -8,7 +8,7 @@
 Server::Server(QObject *parent) :
     QObject(parent),
     server(new QTcpServer(this)),
-    receiver(nullptr)
+    clients()
 {
     connect(server, &QTcpServer::newConnection, this, &Server::newConnection);
 }
@@ -24,6 +24,10 @@ void Server::start(){
 }
 
 void Server::stop(){
+    for (const auto socket : clients) {
+        socket->disconnectFromHost();
+    }
+
     server->close();
     emit sendMessage("Cервер остановлен");
 }
@@ -33,20 +37,23 @@ quint16 Server::getServerPort(){
 }
 
 void Server::newConnection() {
-    receiver = server->nextPendingConnection();
-    emit sendMessage("Клиент присоединен");
+    while(server->hasPendingConnections()){
+        QTcpSocket* socket = server->nextPendingConnection();
+        emit sendMessage("Клиент присоединен");
 
-    connect(receiver, &QTcpSocket::disconnected, [this](){
-        emit sendMessage("Клиент отсоединен");
-        //receiver->deleteLater();
-    });
+        connect(socket, &QTcpSocket::disconnected, [this, socket](){
+            emit sendMessage("Клиент отсоединен");
+            clients.removeAll(socket);
+            socket->deleteLater();
+        });
+    }
 }
 
-void Server::sendData(double value){
-    if(receiver != nullptr){
-        QDataStream data(receiver);
+void Server::sendData(qreal value){
+    for (const auto socket : clients) {
+        QDataStream data(socket);
         data << value;
-        receiver->flush();
+        socket->flush();
     }
 }
 

@@ -11,7 +11,7 @@ class MySignal : public QObject
     Q_OBJECT
 public:
     explicit MySignal(QObject *parent = nullptr);
-    virtual ~MySignal();
+    ~MySignal();
 
     void setTimeInterval(int);
     void setFunction(std::function<double(double)>);

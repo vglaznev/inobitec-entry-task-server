@@ -41,6 +41,8 @@ void Server::newConnection() {
         QTcpSocket* socket = server->nextPendingConnection();
         emit sendMessage("Клиент присоединен");
 
+        clients << socket;
+
         connect(socket, &QTcpSocket::disconnected, [this, socket](){
             emit sendMessage("Клиент отсоединен");
             clients.removeAll(socket);

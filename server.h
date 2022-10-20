@@ -11,16 +11,24 @@ class Server : public QObject
     Q_OBJECT
 public:
     explicit Server(QObject *parent = nullptr);
+    ~Server();
+
+    void start();
+    void stop();
+
+    quint16 getServerPort();
 
 signals:
+    void sendMessage(QString);
 
 public slots:
     void newConnection();
-    void sendData();
+    void sendData(qreal);
 
 private:
     QTcpServer* server;
-    QTcpSocket* receiver;
+    QList<QTcpSocket*> clients;
+
 };
 
 #endif // SERVER_H

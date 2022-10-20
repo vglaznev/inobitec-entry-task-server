@@ -1,4 +1,5 @@
 #include "server.h"
+
 #include <QTimer>
 #include <QDataStream>
 #include <QTcpServer>
@@ -6,39 +7,55 @@
 
 Server::Server(QObject *parent) :
     QObject(parent),
-    server(nullptr),
-    receiver(nullptr)
+    server(new QTcpServer(this)),
+    clients()
 {
-    server = new QTcpServer(this);
-
     connect(server, &QTcpServer::newConnection, this, &Server::newConnection);
+}
 
-    QTimer* timer = new QTimer();
-    connect(timer, &QTimer::timeout, this, &Server::sendData);
-    timer->start(20);
+Server::~Server(){
+}
 
-    if(!server->listen(QHostAddress::Any, 1234)){
-        qDebug() << "Server couldn't start";
-    } else {
-        qDebug() << "Server started";
+void Server::start(){
+    if(!server->listen(QHostAddress::Any, 1043)){
+        server->listen();
     }
+    emit sendMessage("Сервер запущен");
+}
+
+void Server::stop(){
+    for (const auto socket : clients) {
+        socket->disconnectFromHost();
+    }
+
+    server->close();
+    emit sendMessage("Cервер остановлен");
+}
+
+quint16 Server::getServerPort(){
+    return server->serverPort();
 }
 
 void Server::newConnection() {
-    receiver = server->nextPendingConnection();
-    qDebug() << "New connection";
+    while(server->hasPendingConnections()){
+        QTcpSocket* socket = server->nextPendingConnection();
+        emit sendMessage("Клиент присоединен");
 
-    connect(receiver, &QTcpSocket::disconnected, [this](){
-        receiver->deleteLater();
-        qDebug() << "Disconected";
-    });
+        clients << socket;
+
+        connect(socket, &QTcpSocket::disconnected, [this, socket](){
+            emit sendMessage("Клиент отсоединен");
+            clients.removeAll(socket);
+            socket->deleteLater();
+        });
+    }
 }
 
-void Server::sendData(){
-    if(receiver != nullptr){
-        QTextStream data(receiver);
-        data << "Test tcp text stream";
-        receiver->flush();
+void Server::sendData(qreal value){
+    for (const auto socket : clients) {
+        QDataStream data(socket);
+        data << value;
+        socket->flush();
     }
 }
 

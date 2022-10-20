@@ -22,8 +22,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     signal->setXInitial(0);
 
+    //При появлении нового значения сигнала отправляем его на сервер
     connect(signal, &MySignal::newValue, server, &Server::sendData);
 
+    //Отображение информации о старте/остановки сервера, подключениях и отключениях
     connect(server, &Server::sendMessage, [this](const QString& message) {
         ui->notificationBox->append("[" + QTime::currentTime().toString() + "]" + "\t " + message);
     });

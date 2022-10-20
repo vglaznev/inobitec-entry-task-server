@@ -10,6 +10,7 @@ MySignal::MySignal(QObject *parent) :
     xStep(0.01)
 {
     timer->setInterval(20);
+    //Генерируем сигнал каждые 20 миллисекунд
     connect(timer, &QTimer::timeout, [this](){calculateNewValue();});
 }
 

@@ -10,7 +10,7 @@ Server::Server(QObject *parent) :
     server(new QTcpServer(this)),
     clients()
 {
-    connect(server, &QTcpServer::newConnection, this, &Server::newConnection);
+    connect(server, &QTcpServer::newConnection, this, &Server::newConnection, Qt::QueuedConnection);
 }
 
 Server::~Server(){
@@ -43,11 +43,11 @@ void Server::newConnection() {
 
         clients << socket;
 
-        connect(socket, &QTcpSocket::disconnected, [this, socket](){
+        connect(socket, &QTcpSocket::disconnected, this, [this, socket](){
             emit sendMessage("Клиент отсоединен");
             clients.removeAll(socket);
             socket->deleteLater();
-        });
+        }, Qt::QueuedConnection);
     }
 }
 

@@ -7,8 +7,7 @@
 
 Server::Server(QObject *parent) :
     QObject(parent),
-    server(new QTcpServer(this)),
-    clients()
+    server(new QTcpServer(this))
 {
     connect(server, &QTcpServer::newConnection, this, &Server::newConnection, Qt::QueuedConnection);
 }

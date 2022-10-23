@@ -26,9 +26,8 @@ public slots:
     void sendData(qreal);
 
 private:
-    QTcpServer* server;
-    QList<QTcpSocket*> clients;
-
+    QTcpServer *server;
+    QList<QTcpSocket *> clients;
 };
 
 #endif // SERVER_H

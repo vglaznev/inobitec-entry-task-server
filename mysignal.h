@@ -25,7 +25,7 @@ signals:
     void newValue(double);
 
 private:
-    QTimer* timer;
+    QTimer *timer;
     std::function<double(double)> function;
     double currentX;
     double xStep;

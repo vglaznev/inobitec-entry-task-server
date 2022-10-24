@@ -23,8 +23,8 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    Server* server;
-    MySignal* signal;
+    Server *server;
+    MySignal *signal;
 };
 
 #endif // MAINWINDOW_H

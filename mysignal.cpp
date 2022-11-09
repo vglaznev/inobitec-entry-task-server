@@ -21,19 +21,9 @@ void MySignal::setFunction(std::function<double(double)> _function)
     function = _function;
 }
 
-void MySignal::setTimeInterval(int _interval)
-{
-    timer->setInterval(_interval);
-}
-
 void MySignal::setXInitial(double xInitial)
 {
     currentX = xInitial;
-}
-
-void MySignal::setXStep(double _xStep)
-{
-    xStep = _xStep;
 }
 
 bool MySignal::start()

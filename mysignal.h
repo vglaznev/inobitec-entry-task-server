@@ -13,10 +13,8 @@ public:
     explicit MySignal(QObject *parent = nullptr);
     ~MySignal();
 
-    void setTimeInterval(int);
     void setFunction(std::function<double(double)>);
     void setXInitial(double);
-    void setXStep(double);
 
     bool start();
     void stop();

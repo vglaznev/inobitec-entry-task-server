@@ -16,10 +16,10 @@ public:
     void start();
     void stop();
 
-    quint16 getServerPort();
-
 signals:
     void sendMessage(QString);
+    void started(qint16);
+    void stopped();
 
 public slots:
     void newConnection();

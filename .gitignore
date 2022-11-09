@@ -1,1 +1,9 @@
 server.pro.user
+.qmake.stash
+.vs/
+debug/
+release/
+server.vcxproj
+server.vcxproj.filters
+server.vcxproj.user
+ui_mainwindow.h

@@ -23,6 +23,7 @@ public:
 
 signals:
     void newValue(double);
+    void started();
 
 private:
     QTimer *timer;

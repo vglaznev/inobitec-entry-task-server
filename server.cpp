@@ -10,13 +10,17 @@ Server::Server(QObject *parent) : QObject(parent), server(new QTcpServer(this))
     connect(server, &QTcpServer::newConnection, this, &Server::newConnection, Qt::QueuedConnection);
 }
 
-Server::~Server() { }
+Server::~Server()
+{
+    stop();
+}
 
 void Server::start()
 {
     if (!server->listen(QHostAddress::Any, 1043)) {
         server->listen();
     }
+    emit started(server->serverPort());
     emit sendMessage("Сервер запущен");
 }
 
@@ -27,26 +31,24 @@ void Server::stop()
     }
 
     server->close();
-    emit sendMessage("Cервер остановлен");
-}
 
-quint16 Server::getServerPort()
-{
-    return server->serverPort();
+    emit stopped();
+    emit sendMessage("Cервер остановлен");
 }
 
 void Server::newConnection()
 {
     while (server->hasPendingConnections()) {
         QTcpSocket *socket = server->nextPendingConnection();
-        emit sendMessage("Клиент присоединен");
+        QString socketDescriptor = QString::number(socket->socketDescriptor());
+        emit sendMessage("Клиент [" + socketDescriptor + "] присоединен");
 
         clients << socket;
 
         connect(
                 socket, &QTcpSocket::disconnected, this,
-                [this, socket]() {
-                    emit sendMessage("Клиент отсоединен");
+                [this, socket, socketDescriptor]() {
+                    emit sendMessage("Клиент [" + socketDescriptor + "] отсоединен");
                     clients.removeAll(socket);
                     socket->deleteLater();
                 },
